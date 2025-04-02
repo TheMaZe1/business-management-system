@@ -12,3 +12,4 @@ class Team(Base):
     description: Mapped[str] = mapped_column(String(255))
 
     users = relationship("User", back_populates="team")
+    departments = relationship("Department", back_populates="team")
