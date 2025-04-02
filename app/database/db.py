@@ -5,9 +5,6 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 class Base(DeclarativeBase):
     pass
 
-from app.models.user import User
-from app.models.team import Team
-
 engine = create_engine("sqlite:///./app.db", echo=True)
 
 session_local = sessionmaker(bind=engine)
