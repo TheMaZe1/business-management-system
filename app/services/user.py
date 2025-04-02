@@ -22,13 +22,14 @@ class UserService:
             raise ValueError("Invalid invite code")
         
         user = User(
+            last_name=user_data.last_name,
             name=user_data.name,
             email=user_data.email,
             password=user_data.password,
             team=team
         )
 
-        return UserResponse.model_validate(self.user_repo.create_user(user))
+        return UserResponse.model_validate(self.user_repo.add(user))
 
     def update(self, user_id: int, user_data: UserUpdate) -> UserResponse:
         user = self.user_repo.get_by_id(user_id)
@@ -50,7 +51,7 @@ class UserService:
         else:
             raise ValueError("User not found")
         
-    def get_by_email(self, oid: str) -> UserResponse:
+    def get_by_id(self, oid: str) -> UserResponse:
         existing_user = self.user_repo.get_by_id(oid)
         if existing_user:
             return UserResponse.model_validate(existing_user)

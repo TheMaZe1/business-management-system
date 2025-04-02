@@ -18,7 +18,7 @@ class TeamsRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get(self, oid: str) -> Team | None:
+    def get_by_id(self, oid: str) -> Team | None:
         raise NotImplementedError
 
     @abstractmethod

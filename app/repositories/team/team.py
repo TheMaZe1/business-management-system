@@ -21,7 +21,7 @@ class SQLAlchemyTeamsRepository(TeamsRepository):
         self.session.refresh(model)
         return model
 
-    def get(self, oid: str) -> Optional[Team]:
+    def get_by_id(self, oid: str) -> Optional[Team]:
         return self.session.query(Team).filter(Team.id == oid).first()
 
     def update(self, oid: str, model: Team) -> Team:

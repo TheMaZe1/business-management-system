@@ -17,7 +17,8 @@ class TeamService:
         
         team = Team(
             name=team_data.name,
-            desription=team_data.description,
+            description=team_data.description,
+            invite_code=team_data.invite_code
         )
 
         return TeamResponse.model_validate(self.team_repo.add(team))
