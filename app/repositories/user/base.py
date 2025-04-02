@@ -18,11 +18,11 @@ class UsersRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get(self, oid: str) -> User | None:
+    def get_by_id(self, oid: str) -> User | None:
         raise NotImplementedError
 
     @abstractmethod
-    def update(self, oid: str, model: User) -> User:
+    def update(self, oid: str, user_data: dict) -> User:
         raise NotImplementedError
 
     @abstractmethod

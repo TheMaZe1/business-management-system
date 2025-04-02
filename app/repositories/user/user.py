@@ -21,15 +21,15 @@ class SQLAlchemyUsersRepository(UsersRepository):
         self.session.refresh(model)
         return model
 
-    def get(self, oid: str) -> Optional[User]:
+    def get_by_id(self, oid: str) -> Optional[User]:
         return self.session.query(User).filter(User.id == oid).first()
 
-    def update(self, oid: str, model: User) -> User:
+    def update(self, oid: str, user_data: dict) -> User:
         existing_user = self.get(oid)
         if not existing_user:
             return None
 
-        for key, value in model.__dict__.items():
+        for key, value in user_data.items():
             if value is not None:
                 setattr(existing_user, key, value)
 
