@@ -49,3 +49,10 @@ class UserService:
             return UserResponse.model_validate(existing_user)
         else:
             raise ValueError("User not found")
+        
+    def get_by_email(self, oid: str) -> UserResponse:
+        existing_user = self.user_repo.get_by_id(oid)
+        if existing_user:
+            return UserResponse.model_validate(existing_user)
+        else:
+            raise ValueError("User not found")
