@@ -9,6 +9,7 @@ from app.database.db import Base
 class User(Base):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
+    last_name: Mapped[str] = mapped_column(String(50))
     name: Mapped[str] = mapped_column(String(50))
     email: Mapped[str] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String(30))
