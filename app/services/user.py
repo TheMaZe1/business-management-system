@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.user import User
-from app.repositories.user import UserRepository
-from app.repositories.team import TeamRepository
+from app.repositories.user.user import SQLAlchemyUsersRepository
+from app.repositories.team.team import SQLAlchemyTeamsRepository
 from app.schemas.user import UserCreate, UserUpdate, UserResponse
 from fastapi import Depends
 from app.database.db import get_db
@@ -9,8 +9,8 @@ from app.database.db import get_db
 
 class UserService:
     def __init__(self, db: Session = Depends(get_db)):
-        self.user_repo = UserRepository(db)
-        self.team_repo = TeamRepository(db)
+        self.user_repo = SQLAlchemyUsersRepository(db)
+        self.team_repo = SQLAlchemyTeamsRepository(db)
 
     def add(self, user_data: UserCreate) -> UserResponse:
         existing_user = self.user_repo.get_by_email(user_data.email)
