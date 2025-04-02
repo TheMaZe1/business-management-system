@@ -1,9 +1,16 @@
+from enum import Enum
 from typing import Optional
-from sqlalchemy import String
+from sqlalchemy import String, Enum as SQLAlchemyEnum
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 from app.database.db import Base
+
+
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    MANAGER = "manager"
+    STAFF = "staff"
 
 
 class User(Base):
@@ -14,8 +21,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String(30))
     team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"))
-    role_id: Mapped[int] = mapped_column(ForeignKey("roles.id"))
+    role = Mapped[str] = mapped_column(SQLAlchemyEnum(UserRole), nullable=False, default=UserRole.STAFF)
 
         # Добавляем связи
     team = relationship("Team", back_populates="users")
-    role = relationship("Role", back_populates="users")
