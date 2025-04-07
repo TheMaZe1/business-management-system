@@ -23,3 +23,5 @@ class Task(Base):
     # Добавляем связи
     assigned_to = relationship("User", foreign_keys=[assigned_to_id])
     created_by = relationship("User", foreign_keys=[created_by_id])
+    evaluation = relationship("Evaluation", uselist=False, back_populates="task")
+
