@@ -24,6 +24,14 @@ class UsersRepository(ABC):
     @abstractmethod
     def update(self, oid: str, user_data: dict) -> User:
         raise NotImplementedError
+    
+    @abstractmethod
+    def soft_delete(self, oid: str) -> User:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def restore(self, oid: str, restore_window_days: int = 7) -> User:
+        raise NotImplementedError
 
     @abstractmethod
     def list(self, start: int = 0, limit: int = 10) -> list[User]:

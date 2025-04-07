@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 from sqlalchemy.orm import Session
 
@@ -36,6 +37,31 @@ class SQLAlchemyUsersRepository(UsersRepository):
         self.session.commit()
         self.session.refresh(existing_user)
         return existing_user
+
+    def soft_delete(self, oid: str) -> User:
+        user = self.get_by_id(oid)
+        if not user:
+            return None
+        user.is_deleted = True
+        user.deleted_at = datetime.datetime.now()
+        self.session.commit()
+        self.session.refresh(user)
+        return user
+    
+    def restore(self, oid: str, restore_window_days: int = 7) -> User:
+        user = self.get_by_id(oid)
+        if not user or not user.is_deleted:
+            return None
+
+        if datetime.datetime.now() - user.deleted_at > datetime.timedelta(days=restore_window_days):
+            return None  # истёк срок восстановления
+
+        user.is_deleted = False
+        user.deleted_at = None
+        self.session.commit()
+        self.session.refresh(user)
+        return user
+
 
     def list(self, start: int = 0, limit: int = 10) -> list[User]:
         return self.session.query(User).offset(start).limit(limit).all()

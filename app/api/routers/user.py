@@ -24,3 +24,19 @@ def get_user(user_id: int, service: UserService = Depends(UserService)):
         return service.get_by_id(user_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+
+@router.delete("/{user_id}")
+def soft_delete_user(user_id: int, service: UserService = Depends(UserService)):
+    try:
+        return service.soft_delete(user_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/restore/{user_id}")
+def restore_user(user_id: int, service: UserService = Depends(UserService)):
+    try:
+        return service.restore(user_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+

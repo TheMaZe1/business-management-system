@@ -57,3 +57,16 @@ class UserService:
             return UserResponse.model_validate(existing_user)
         else:
             raise ValueError("User not found")
+        
+
+    def soft_delete(self, user_id: int) -> UserResponse:
+        user = self.user_repo.soft_delete(user_id)
+        if not user:
+            raise ValueError("User not found")
+        return UserResponse.model_validate(user)
+
+    def restore(self, user_id: int) -> UserResponse:
+        user = self.user_repo.restore(user_id)
+        if not user:
+            raise ValueError("User not found or restore window expired")
+        return UserResponse.model_validate(user)
