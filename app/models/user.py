@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from enum import Enum
 from typing import Optional
 from sqlalchemy import Column, String, Enum as SQLAlchemyEnum, DateTime, Boolean, func

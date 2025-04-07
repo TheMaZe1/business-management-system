@@ -13,3 +13,4 @@ class Team(Base):
 
     users = relationship("User", back_populates="team")
     departments = relationship("Department", back_populates="team")
+    news = relationship("News", back_populates="team", cascade="all, delete-orphan")

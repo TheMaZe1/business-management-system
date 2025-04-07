@@ -12,6 +12,7 @@ from app.models.team import Team
 from app.models.departament import Department
 from app.models.task import Task
 from app.models.meeting import Meeting
+from app.models.news import News
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
