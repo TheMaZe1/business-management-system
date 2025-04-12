@@ -21,6 +21,6 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(30))
     password: Mapped[str] = mapped_column(String(30))
     role = Column(SQLAlchemyEnum(UserRole), nullable=False, default=UserRole.USER)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    deleted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    deleted_at: Mapped[datetime] = mapped_column(nullable=True)
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
