@@ -1,6 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+
 from app.services.user import UserService
 from app.schemas.user import UserCreate, UserUpdate, UserResponse
+from app.schemas.jwt import Token
+from app.models.user import UserRole
+from app.api.v1.routers.deps import get_current_user
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -21,7 +26,10 @@ async def update_user(
     user_id: int,
     user_data: UserUpdate,
     service: UserService = Depends(UserService),
+    current_user: UserResponse = Depends(get_current_user)
 ):
+    if current_user.id != user_id and current_user.role != UserRole.SUPERUSER:
+        raise HTTPException(status_code=403, detail="Not authorized to update this user")
     try:
         return await service.update(user_id, user_data)
     except ValueError as e:
@@ -32,7 +40,10 @@ async def update_user(
 async def get_user(
     user_id: int,
     service: UserService = Depends(UserService),
+    current_user: UserResponse = Depends(get_current_user)
 ):
+    if current_user.id != user_id and current_user.role != UserRole.SUPERUSER:
+        raise HTTPException(status_code=403, detail="Not authorized to get this user")
     try:
         return await service.get_by_id(user_id)
     except ValueError as e:
@@ -43,7 +54,10 @@ async def get_user(
 async def soft_delete_user(
     user_id: int,
     service: UserService = Depends(UserService),
+    current_user: UserResponse = Depends(get_current_user)
 ):
+    if current_user.id != user_id and current_user.role != UserRole.SUPERUSER:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this user")
     try:
         return await service.soft_delete(user_id)
     except ValueError as e:
@@ -54,8 +68,17 @@ async def soft_delete_user(
 async def restore_user(
     user_id: int,
     service: UserService = Depends(UserService),
+    current_user: UserResponse = Depends(get_current_user)
 ):
+    if current_user.id != user_id and current_user.role != UserRole.SUPERUSER:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this user")
     try:
         return await service.restore(user_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+@router.post("/login", response_model=Token)
+async def login_user(auth_data: OAuth2PasswordRequestForm = Depends(), service: UserService = Depends(UserService)):
+    access_token = await service.authenticate_user(auth_data.username, auth_data.password)
+    return Token.model_validate({"access_token": access_token, "token_type": "bearer"})

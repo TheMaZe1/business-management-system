@@ -19,7 +19,7 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String(50))
     name: Mapped[str] = mapped_column(String(50))
     email: Mapped[str] = mapped_column(String(30))
-    password: Mapped[str] = mapped_column(String(30))
+    password: Mapped[str] = mapped_column(String(128))
     role = Column(SQLAlchemyEnum(UserRole), nullable=False, default=UserRole.USER)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     deleted_at: Mapped[datetime] = mapped_column(nullable=True)

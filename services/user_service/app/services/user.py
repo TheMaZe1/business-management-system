@@ -1,10 +1,14 @@
+from datetime import timedelta
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate, UserResponse
+from app.schemas.jwt import Token
 from app.database.db import get_db_session
 from app.repositories.user import SQLAlchemyUsersRepository
+from app.utils.jwt import create_access_token
+from app.utils.password import hash_password, verify_password
 
 
 class UserService:
@@ -20,7 +24,7 @@ class UserService:
             last_name=user_data.last_name,
             name=user_data.name,
             email=user_data.email,
-            password=user_data.password  # TODO: хеширование пароля
+            password=hash_password(user_data.password)
         )
 
         saved_user = await self.user_repo.add(user)
@@ -31,7 +35,7 @@ class UserService:
         if not user:
             raise ValueError("User not found")
 
-        if user_data.email:
+        if user_data.email and user_data.email != user.email:
             existing_user = await self.user_repo.get_by_email(user_data.email)
             if existing_user and existing_user.id != user_id:
                 raise ValueError("Email is already in use")
@@ -64,3 +68,16 @@ class UserService:
         if not user:
             raise ValueError("User not found or restore window expired")
         return UserResponse.model_validate(user)
+
+    async def authenticate_user(self, email: str, password: str) -> str:
+        user = await self.user_repo.get_by_email(email)
+        if not user or not verify_password(password, user.password):
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
+        access_token = create_access_token(
+            data={"sub": str(user.id),
+                  "email": user.email,
+                  "name": user.name},
+            expires_delta=timedelta(minutes=60)  # Экспирация токена
+        )
+        return access_token
