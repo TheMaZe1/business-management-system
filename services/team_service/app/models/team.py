@@ -18,3 +18,4 @@ class Team(Base):
 
     memberships: Mapped[list[Membership]] = relationship("Membership", back_populates="team")
     departments = relationship("Department", back_populates="team")
+    news = relationship("TeamNews", back_populates="team")
