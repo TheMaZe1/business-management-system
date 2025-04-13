@@ -1,7 +1,7 @@
 # app/api/v1/routers/members.py
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from app.schemas.membership import MembershipSummary, MembershipUpdate
+from app.schemas.membership import MembershipCreate, MembershipSummary, MembershipUpdate
 from app.services.membership import MembershipService
 from app.api.v1.routers.deps import get_current_user, get_membership
 from app.models.membership import MembershipRole
@@ -21,8 +21,7 @@ async def get_team_members(team_id: int, service: MembershipService = Depends(Me
 @router.post("/{user_id}", response_model=MembershipSummary)
 async def add_member(
     team_id: int,
-    user_id: int,  # ID пользователя, которого нужно добавить в команду
-    role: MembershipRole,  # Роль пользователя в команде
+    member_data: MembershipCreate = Depends(),
     service: MembershipService = Depends(MembershipService),  # Сервис для работы с участниками команды
     current_user: int = Depends(get_current_user)  # Текущий аутентифицированный пользователь
 ):
@@ -34,12 +33,12 @@ async def add_member(
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admin can add members")
 
         # Проверяем, что пользователь еще не является участником команды
-        existing_membership = await service.get_member_by_team_and_user(team_id, user_id)
+        existing_membership = await service.get_member_by_team_and_user(team_id, member_data.user_id)
         if existing_membership:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already a member of this team")
         
         # Создаем новое членство
-        new_membership = await service.add_member(team_id=team_id, user_id=user_id, role=role)
+        new_membership = await service.add_member(team_id=team_id, user_id=member_data.user_id, role=member_data.role, department_id=member_data.department_id)
         return new_membership
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

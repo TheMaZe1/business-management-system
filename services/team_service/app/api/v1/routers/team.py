@@ -3,6 +3,7 @@ from app.schemas.team import TeamCreate, TeamResponse, TeamUpdate
 from app.services.team import TeamService
 from app.api.v1.routers.deps import get_current_user, get_membership
 from app.models.membership import MembershipRole
+from app.services.membership import MembershipService
 
 
 router = APIRouter(prefix="/teams", tags=["Teams"])
@@ -27,18 +28,22 @@ async def update_team(team_id: int, team_data: TeamUpdate, service: TeamService 
 
 
 @router.get("/{team_id}", response_model=TeamResponse)
-async def get_team(team_id: int, service: TeamService = Depends(TeamService), current_user: int = Depends(get_current_user)):
+async def get_team(team_id: int, service: TeamService = Depends(TeamService), current_user: int = Depends(get_current_user), membership_service: MembershipService = Depends(MembershipService)):
     try:
-        await get_membership(team_id, current_user)
+        await get_membership(team_id, current_user, membership_service)
         return await service.get_by_id(team_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.delete("/{team_id}", status_code=204)
-async def soft_delete_team(team_id: int, service: TeamService = Depends(TeamService), current_user: int = Depends(get_current_user)):
+async def soft_delete_team(
+    team_id: int,
+    service: TeamService = Depends(TeamService),
+    current_user: int = Depends(get_current_user),
+    membership_service: MembershipService = Depends(MembershipService)):
     try:
-        membership = await get_membership(team_id, current_user)
+        membership = await get_membership(team_id, current_user, membership_service)
         if membership.role != MembershipRole.ADMIN:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not a member of this team")
         await service.soft_delete_team(team_id)
@@ -50,10 +55,11 @@ async def soft_delete_team(team_id: int, service: TeamService = Depends(TeamServ
 async def restore_user(
     team_id: int,
     service: TeamService = Depends(TeamService),
-    current_user: int = Depends(get_current_user)
+    current_user: int = Depends(get_current_user),
+    membership_service: MembershipService = Depends(MembershipService)
 ):
     try:
-        membership = await get_membership(team_id, current_user)
+        membership = await get_membership(team_id, current_user, membership_service)
         if membership.role != MembershipRole.ADMIN:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User is not a member of this team")
         return await service.restore(team_id)

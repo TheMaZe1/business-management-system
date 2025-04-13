@@ -16,10 +16,11 @@ class SQLAlchemyMembershipRepository:
         return membership
 
     async def get_by_user_and_team(self, user_id: int, team_id: int) -> Optional[Membership]:
-        result = await self.session.execute(
-            select(Membership).filter(Membership.user_id == user_id, Membership.team_id == team_id)
-        )
-        return result.scalars().first()
+        async with self.session.begin():
+            result = await self.session.execute(
+                select(Membership).filter(Membership.user_id == user_id, Membership.team_id == team_id)
+            )
+            return result.scalars().first()
 
     async def list_by_team(self, team_id: int) -> list[Membership]:
         result = await self.session.execute(
@@ -30,3 +31,12 @@ class SQLAlchemyMembershipRepository:
     async def delete(self, membership: Membership) -> None:
         await self.session.delete(membership)
         await self.session.commit()
+
+    async def list_by_department(self, team_id: int, department_id: int) -> list[Membership]:
+        result = await self.session.execute(
+            select(Membership).filter(
+                Membership.team_id == team_id,
+                Membership.department_id == department_id
+            )
+        )
+        return result.scalars().all()
