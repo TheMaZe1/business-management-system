@@ -1,5 +1,8 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
+
+from app.schemas.user import UserSummary
+from app.schemas.department import DepartmentStructure
 
 
 class TeamCreate(BaseModel):
@@ -19,3 +22,9 @@ class TeamUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
 
+class TeamStructureResponse(BaseModel):
+    team_id: int
+    team_name: str
+    admins: List[UserSummary]
+    departments: List[DepartmentStructure]
+    members_without_department: List[UserSummary]

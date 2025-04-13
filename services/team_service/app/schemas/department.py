@@ -1,7 +1,9 @@
 # app/schemas/department.py
 
 from pydantic import BaseModel
-from typing import Optional
+from typing import List, Optional
+
+from app.schemas.user import UserSummary
 
 
 class DepartmentCreate(BaseModel):
@@ -22,3 +24,9 @@ class DepartmentResponse(BaseModel):
 class DepartmentUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+
+class DepartmentStructure(BaseModel):
+    department_id: int
+    name: str
+    managers: List[UserSummary]
+    members: List[UserSummary]

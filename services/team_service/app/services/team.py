@@ -4,17 +4,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.team import Team
 from app.repositories.team import SQLAlchemyTeamsRepository
-from app.schemas.team import TeamCreate, TeamResponse, TeamUpdate
+from app.schemas.team import TeamCreate, TeamResponse, TeamStructureResponse, TeamUpdate
 from fastapi import Depends
 from app.database.db import get_db_session
 from app.models.membership import Membership, MembershipRole
 from app.repositories.membership import SQLAlchemyMembershipRepository
+from app.schemas.department import DepartmentStructure
+from app.schemas.user import UserSummary
+from app.repositories.department import SQLAlchemyDepartmentRepository
 
 
 class TeamService:
     def __init__(self, db: AsyncSession = Depends(get_db_session)):
         self.team_repo = SQLAlchemyTeamsRepository(db)
         self.membership_repo = SQLAlchemyMembershipRepository(db)
+        self.department_repo = SQLAlchemyDepartmentRepository(db)
 
     async def _create_membership(self, user_id: int, team_id: int):
         # Создаем запись в таблице Membership для связи пользователя и команды
@@ -82,3 +86,49 @@ class TeamService:
         if not team:
             raise ValueError("Team not found or restore window expired")
         return TeamResponse.model_validate(team)
+    
+    async def get_team_structure(self, team_id: int) -> TeamStructureResponse:
+        team = await self.team_repo.get_by_id(team_id)
+        if not team:
+            raise ValueError("Team not found")
+
+        memberships = await self.membership_repo.list_by_team(team_id)
+        departments = await self.department_repo.list_by_team(team_id)
+
+        admins = []
+        members_without_department = []
+        department_map = {dept.id: {"managers": [], "members": []} for dept in departments}
+
+        for m in memberships:
+            user = m.user_id  # Убедись, что ты делаешь join user при загрузке membership
+            user_summary = UserSummary(user_id=user)
+
+            if m.role == MembershipRole.ADMIN:
+                admins.append(user_summary)
+
+            elif m.department_id is None:
+                members_without_department.append(user_summary)
+
+            elif m.department_id in department_map:
+                if m.role == MembershipRole.MANAGER:
+                    department_map[m.department_id]["managers"].append(user_summary)
+                else:
+                    department_map[m.department_id]["members"].append(user_summary)
+
+        dept_structures = [
+            DepartmentStructure(
+                department_id=dept.id,
+                name=dept.name,
+                managers=department_map[dept.id]["managers"],
+                members=department_map[dept.id]["members"]
+            )
+            for dept in departments
+        ]
+
+        return TeamStructureResponse(
+            team_id=team.id,
+            team_name=team.name,
+            admins=admins,
+            departments=dept_structures,
+            members_without_department=members_without_department
+        )

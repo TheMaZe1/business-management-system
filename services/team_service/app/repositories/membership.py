@@ -23,10 +23,11 @@ class SQLAlchemyMembershipRepository:
             return result.scalars().first()
 
     async def list_by_team(self, team_id: int) -> list[Membership]:
-        result = await self.session.execute(
-            select(Membership).filter(Membership.team_id == team_id)
-        )
-        return result.scalars().all()
+        async with self.session.begin():
+            result = await self.session.execute(
+                select(Membership).filter(Membership.team_id == team_id)
+            )
+            return result.scalars().all()
 
     async def delete(self, membership: Membership) -> None:
         await self.session.delete(membership)

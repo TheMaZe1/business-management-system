@@ -31,3 +31,11 @@ class SQLAlchemyDepartmentRepository:
     async def delete(self, department: Department) -> None:
         await self.session.delete(department)
         await self.session.commit()
+
+
+    async def list_by_team(self, team_id: int) -> list[Department]:
+        async with self.session.begin():
+            result = await self.session.execute(
+                select(Department).where(Department.team_id == team_id)
+            )
+            return result.scalars().all()
