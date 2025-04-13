@@ -7,13 +7,27 @@ from app.repositories.team import SQLAlchemyTeamsRepository
 from app.schemas.team import TeamCreate, TeamResponse, TeamUpdate
 from fastapi import Depends
 from app.database.db import get_db_session
+from app.models.membership import Membership, MembershipRole
+from app.repositories.membership import SQLAlchemyMembershipRepository
 
 
 class TeamService:
     def __init__(self, db: AsyncSession = Depends(get_db_session)):
         self.team_repo = SQLAlchemyTeamsRepository(db)
+        self.membership_repo = SQLAlchemyMembershipRepository(db)
 
-    async def add(self, team_data: TeamCreate) -> TeamResponse:
+    async def _create_membership(self, user_id: int, team_id: int):
+        # Создаем запись в таблице Membership для связи пользователя и команды
+        membership = Membership(
+            user_id=user_id,
+            team_id=team_id,
+            role=MembershipRole.ADMIN,  # Предполагаем, что пользователь является администратором
+        )
+        
+        # Добавляем membership в репозиторий
+        await self.membership_repo.add(membership)
+
+    async def add(self, team_data: TeamCreate, user_id: int) -> TeamResponse:
         existing_team = await self.team_repo.get_by_name(team_data.name)
         if existing_team:
             raise ValueError("Team with this name already exists")
@@ -22,6 +36,10 @@ class TeamService:
             name=team_data.name,
             description=team_data.description,
         )
+
+        new_team = await self.team_repo.add(team)
+
+        await self._create_membership(user_id, new_team.id)
 
         return TeamResponse.model_validate(await self.team_repo.add(team))
 

@@ -4,6 +4,7 @@ from sqlalchemy.orm import mapped_column, Mapped, relationship
 from sqlalchemy import Boolean, ForeignKey, String, func
 
 from app.database.db import Base
+from app.models.membership import Membership
 
 
 class Team(Base):
@@ -15,3 +16,4 @@ class Team(Base):
     deleted_at: Mapped[datetime] = mapped_column(nullable=True)
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
 
+    memberships: Mapped[list[Membership]] = relationship("Membership", back_populates="team")

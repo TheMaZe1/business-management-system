@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.api.v1.routers import team_router  # Импорт твоего роутера
+from app.api.v1.routers import router  # Импорт твоего роутера
 
 
 app = FastAPI(
@@ -10,7 +10,7 @@ app = FastAPI(
 )
 
 # Подключаем роутеры
-app.include_router(team_router)
+app.include_router(router)
 
 
 @app.get("/")
