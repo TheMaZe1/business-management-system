@@ -18,6 +18,8 @@ class Membership(Base):
     team_id: Mapped[int] = mapped_column(Integer, ForeignKey('teams.id'), nullable=False)
     role = Column(SQLAlchemyEnum(MembershipRole), nullable=False, default=MembershipRole.STAFF)
     joined_at: Mapped[datetime] = mapped_column(server_default=func.now())
+    department_id: Mapped[int] = mapped_column(ForeignKey("departments.id"), nullable=True)
 
+    department = relationship("Department", back_populates="members")
     # Связь с командой
     team = relationship("Team", back_populates="memberships")

@@ -17,3 +17,4 @@ class Team(Base):
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
 
     memberships: Mapped[list[Membership]] = relationship("Membership", back_populates="team")
+    departments = relationship("Department", back_populates="team")

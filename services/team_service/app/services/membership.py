@@ -33,7 +33,7 @@ class MembershipService:
         member = await self.membership_repo.get_by_user_and_team(user_id, team_id)
         if not member:
             return None
-        return MembershipSummary(user_id=member.user_id, role=member.role)
+        return MembershipSummary(user_id=member.user_id, role=member.role, department_id=member.department_id)
 
     async def update_member_role(self, team_id: int, user_id: int, membership_data: MembershipUpdate) -> MembershipSummary:
         # Обновляем роль участника
