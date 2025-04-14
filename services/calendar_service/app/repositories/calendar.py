@@ -1,6 +1,8 @@
 from app.models.calendar import Calendar
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import delete, select
+
+from app.models.event import CalendarEvent
 
 class CalendarRepository:
     def __init__(self, session: AsyncSession):
@@ -21,3 +23,9 @@ class CalendarRepository:
             select(Calendar).where(Calendar.owner_id == user_id)
         )
         return result.scalar_one_or_none()
+    
+    async def delete_by_meeting_id(self, meeting_id: int):
+        await self.session.execute(
+            delete(CalendarEvent).where(CalendarEvent.meeting_id == meeting_id)
+        )
+        await self.session.commit()

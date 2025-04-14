@@ -18,8 +18,8 @@ class CalendarEventResponse(CalendarEventBase):
     calendar_id: int
 
     class Config:
-        orm_mode = True
-
+        from_attributes=True
+        
 class CalendarEventUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None

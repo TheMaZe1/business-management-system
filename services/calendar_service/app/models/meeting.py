@@ -6,15 +6,6 @@ from sqlalchemy.orm import relationship
 
 from app.database.db import Base
 
-
-meeting_participants = Table(
-    "meeting_participants",
-    Base.metadata,
-    Column("meeting_id", ForeignKey("meetings.id"), primary_key=True),
-    Column("user_id", Integer, primary_key=True)
-)
-
-
 class Meeting(Base):
     __tablename__ = "meetings"
 
@@ -24,7 +15,6 @@ class Meeting(Base):
     start_time = Column(DateTime, nullable=False)
     end_time = Column(DateTime, nullable=False)
     organizer_id = Column(Integer)
+    team_id = Column(Integer, nullable=False)
 
-    organizer = relationship("User")
-    participants = relationship("User", secondary=meeting_participants, backref="meetings")
     events = relationship("CalendarEvent", back_populates="meeting", cascade="all, delete-orphan")

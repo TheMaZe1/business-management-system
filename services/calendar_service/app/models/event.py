@@ -16,6 +16,7 @@ class CalendarEvent(Base):
     is_meeting = Column(Boolean, default=False)
     task_id = Column(Integer, nullable=True)
     meeting_id = Column(Integer, ForeignKey("meetings.id"), nullable=True)
+    team_id = Column(Integer, nullable=True)
 
     meeting = relationship("Meeting", back_populates="events")
 

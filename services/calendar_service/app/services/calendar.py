@@ -17,6 +17,10 @@ class CalendarService:
             is_team_calendar=calendar_data.is_team_calendar
         )
         return await self.repo.create(calendar)
+    
+    async def get_by_user(self, user_id: int) -> Calendar:
+        calendar = await self.repo.get_by_user(user_id)
+        return calendar
 
     async def get_calendar_by_id(self, calendar_id: int) -> Calendar | None:
         return await self.repo.get_by_id(calendar_id)

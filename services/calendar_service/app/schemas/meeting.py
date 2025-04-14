@@ -14,7 +14,17 @@ class MeetingCreate(MeetingBase):
 class MeetingResponse(MeetingBase):
     id: int
     organizer_id: int
-    participant_ids: List[int]
+    participant_ids: List[int] = []
 
     class Config:
-        orm_mode = True
+        from_attributes=True
+
+class MeetingUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    participant_ids: Optional[List[int]] = None  # Список ID участников для обновления
+
+    class Config:
+        from_attributes=True
