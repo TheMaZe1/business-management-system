@@ -28,7 +28,7 @@ class TaskService:
         return new_task
 
 
-    async def get_task(self, task_id: int) -> Task:
+    async def get_task_by_id(self, task_id: int) -> Task:
         task = await self.repo.get_by_id(task_id)
         if not task:
             raise ValueError("Task not found")

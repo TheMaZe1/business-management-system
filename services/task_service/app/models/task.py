@@ -24,5 +24,7 @@ class Task(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     comments = relationship("Comment", back_populates="task")
+    evaluations = relationship("TaskEvaluation", back_populates="task")
+
 
 
