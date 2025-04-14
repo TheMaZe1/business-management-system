@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.services.user import UserService
@@ -6,6 +6,7 @@ from app.schemas.user import UserCreate, UserUpdate, UserResponse
 from app.schemas.jwt import Token
 from app.models.user import UserRole
 from app.api.v1.routers.deps import get_current_user
+from app.utils.broker import publish_user_created_event
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -13,10 +14,16 @@ router = APIRouter(prefix="/users", tags=["Users"])
 @router.post("/", response_model=UserResponse)
 async def register_user(
     user_data: UserCreate,
+    background_tasks: BackgroundTasks,
     service: UserService = Depends(UserService),
 ):
     try:
-        return await service.add(user_data)
+        user = await service.create_user(user_data)
+
+    # Отложенная задача — публикация события
+        background_tasks.add_task(publish_user_created_event, user.id)
+
+        return user
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

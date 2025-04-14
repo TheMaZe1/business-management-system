@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 
@@ -17,7 +18,7 @@ async_session = async_sessionmaker(
 class Base(DeclarativeBase):
     pass
 
-
+@asynccontextmanager
 async def get_db_session() -> AsyncSession: # type: ignore
     async with async_session() as session:
         yield session

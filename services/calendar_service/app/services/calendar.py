@@ -12,7 +12,6 @@ class CalendarService:
 
     async def create_calendar(self, owner_id: int, calendar_data: CalendarCreate) -> Calendar:
         calendar = Calendar(
-            name=calendar_data.name,
             owner_id=owner_id,
             is_team_calendar=calendar_data.is_team_calendar
         )
@@ -33,3 +32,8 @@ class CalendarService:
         # Если календарь не найден — создаём новый
         new_calendar = Calendar(user_id=user_id)
         return await self.repo.create(new_calendar)
+
+    async def get_calendar_with_events(self, user_id: int) -> Calendar:
+        calendar = await self.repo.get_user_calendar_with_events(user_id)
+
+        return calendar

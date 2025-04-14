@@ -22,7 +22,7 @@ async def get_calendar(
     current_user: int = Depends(get_current_user),
     service: CalendarService = Depends(CalendarService)
 ):
-    calendar = await service.get_or_create_calendar(current_user)
+    calendar = await service.get_calendar_with_events(current_user)
     return calendar
 
 # Удалить календарь (опционально)

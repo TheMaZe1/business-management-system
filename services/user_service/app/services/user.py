@@ -15,7 +15,7 @@ class UserService:
     def __init__(self, db: AsyncSession = Depends(get_db_session)):
         self.user_repo = SQLAlchemyUsersRepository(db)
 
-    async def add(self, user_data: UserCreate) -> UserResponse:
+    async def create_user(self, user_data: UserCreate) -> UserResponse:
         existing_user = await self.user_repo.get_by_email(user_data.email)
         if existing_user:
             raise ValueError("User with this email already exists")
