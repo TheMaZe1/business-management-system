@@ -8,6 +8,7 @@ from alembic import context
 from app.database.db import Base
 from app.models.calendar import Calendar
 from app.models.event import CalendarEvent
+from app.models.meeting import Meeting, meeting_participants
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
