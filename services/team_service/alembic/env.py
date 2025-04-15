@@ -8,6 +8,7 @@ from app.models.team import Team
 from app.models.membership import Membership
 from app.models.department import Department
 from app.models.news import TeamNews
+from app.models.invite import InviteCode
 
 from alembic import context
 
