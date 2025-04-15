@@ -5,9 +5,10 @@ from datetime import datetime, timedelta
 
 from app.config import settings
 from app.schemas.jwt import TokenData
+from app.config import settings
 
 # Путь, по которому пользователи будут отправлять свои учетные данные для получения токена
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=settings.TOKEN_URL)
 
 
 # Генерация JWT токена

@@ -1,8 +1,8 @@
 import datetime
 from typing import Optional, List
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy import select
 
 from app.models.user import User
 

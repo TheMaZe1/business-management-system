@@ -27,7 +27,3 @@ class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     password: Optional[str] = None
-
-
-class AdminUserUpdate(UserUpdate):
-    role: Optional[UserRole] = None

@@ -10,7 +10,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Подключаем роутеры
 app.include_router(user_router)
 
 app.add_middleware(

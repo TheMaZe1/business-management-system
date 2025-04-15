@@ -8,6 +8,7 @@ from app.models.user import UserRole
 from app.api.v1.routers.deps import get_current_user
 from app.utils.broker import publish_user_created_event
 
+
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
@@ -55,6 +56,18 @@ async def get_user(
         return await service.get_by_id(user_id)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+
+@router.get("/profile", response_model=UserResponse)
+async def get_user_profile(
+    user_id: int,
+    service: UserService = Depends(UserService),
+    current_user: UserResponse = Depends(get_current_user)
+):
+    try:
+        return await service.get_by_id(current_user.user_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @router.delete("/{user_id}", response_model=UserResponse)
@@ -78,7 +91,7 @@ async def restore_user(
     current_user: UserResponse = Depends(get_current_user)
 ):
     if current_user.id != user_id and current_user.role != UserRole.SUPERUSER:
-        raise HTTPException(status_code=403, detail="Not authorized to delete this user")
+        raise HTTPException(status_code=403, detail="Not authorized to restore this user")
     try:
         return await service.restore(user_id)
     except ValueError as e:

@@ -1,15 +1,14 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
-from sqlalchemy import Column, String, Enum as SQLAlchemyEnum, DateTime, Boolean, func
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import mapped_column, Mapped, relationship
+
+from sqlalchemy import Column, String, Enum as SQLAlchemyEnum, Boolean, func
+from sqlalchemy.orm import mapped_column, Mapped
 
 from app.database.db import Base
 
 
 class UserRole(str, Enum):
-    SUPERUSER = "supeuser"
+    SUPERUSER = "supeuser" # возможно добавление superuser в будущем
     USER = "user"
 
 

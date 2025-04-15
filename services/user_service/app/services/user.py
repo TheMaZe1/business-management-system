@@ -1,10 +1,10 @@
 from datetime import timedelta
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, HTTPException
 
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate, UserResponse
-from app.schemas.jwt import Token
 from app.database.db import get_db_session
 from app.repositories.user import SQLAlchemyUsersRepository
 from app.utils.jwt import create_access_token
@@ -78,6 +78,6 @@ class UserService:
             data={"sub": str(user.id),
                   "email": user.email,
                   "name": user.name},
-            expires_delta=timedelta(minutes=60)  # Экспирация токена
+            expires_delta=timedelta(minutes=60) # время жизни токена
         )
         return access_token

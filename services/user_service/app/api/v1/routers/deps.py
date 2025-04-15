@@ -15,8 +15,7 @@ async def get_current_user(
         user_id: int = int(payload.get("sub"))
         if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-    except jwt.PyJWTError as e:
-        print("test", e)
+    except jwt.PyJWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
     user = await service.get_by_id(user_id)

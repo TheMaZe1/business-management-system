@@ -1,7 +1,11 @@
-import aio_pika
 import json
 
-RABBITMQ_URL = "amqp://guest:guest@localhost/"
+import aio_pika
+
+from app.config import settings
+
+
+RABBITMQ_URL = settings.RABBITMQ_URL
 
 # Подключаемся к RabbitMQ
 async def get_connection():
