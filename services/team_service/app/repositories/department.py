@@ -1,9 +1,10 @@
+from typing import List, Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.exc import NoResultFound
 
 from app.models.department import Department
-from typing import List, Optional
+
 
 
 class SQLAlchemyDepartmentRepository:

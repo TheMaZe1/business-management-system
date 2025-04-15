@@ -1,9 +1,9 @@
+from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.orm import Session
+
 from app.models.membership import Membership
-from typing import Optional
-from app.models.team import Team
 
 class SQLAlchemyMembershipRepository:
     def __init__(self, session: AsyncSession):

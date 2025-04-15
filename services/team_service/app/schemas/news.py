@@ -1,6 +1,5 @@
-# app/schemas/news.py
-
 from datetime import datetime
+
 from pydantic import BaseModel
 
 class NewsCreate(BaseModel):
@@ -17,7 +16,6 @@ class NewsResponse(BaseModel):
     class Config:
         from_attributes=True
 
-# app/schemas/news.py
 
 class NewsUpdate(BaseModel):
     title: str | None = None

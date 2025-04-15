@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from app.services.membership import MembershipService
 from app.api.v1.routers.deps import get_current_user, get_membership
 from app.schemas.membership import MembershipSummary
-from app.models.membership import MembershipRole  # если роли в отдельном файле
+from app.models.membership import MembershipRole
 
 router = APIRouter(prefix="/teams/{team_id}/departments/{department_id}/members", tags=["Departments Members"])
 

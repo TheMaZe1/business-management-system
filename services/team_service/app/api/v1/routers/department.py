@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
+
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.schemas.department import DepartmentCreate, DepartmentResponse, DepartmentUpdate
 from app.services.department import DepartmentService
 from app.api.v1.routers.deps import get_current_user, get_membership
 from app.services.membership import MembershipService
 from app.models.membership import MembershipRole
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 router = APIRouter(prefix="/teams/{team_id}/departments", tags=["Departments"])
@@ -35,7 +35,7 @@ async def list_departments(
 ):
     member = await get_membership(team_id, current_user, membership_service)
     if member.role != MembershipRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admin can create department")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only the admin can view departments")
     return await service.get_departments_by_team(team_id)
 
 
@@ -62,7 +62,7 @@ async def update_department(
 ):
     member = await get_membership(team_id, current_user, membership_service)
     if member.role != MembershipRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admin can create department")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admin can update department")
     return await service.update_department(department_id, update_data)
 
 
@@ -76,5 +76,5 @@ async def delete_department(
 ):
     member = await get_membership(team_id, current_user, membership_service)
     if member.role != MembershipRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admin can create department")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admin can delete department")
     await service.delete_department(department_id)

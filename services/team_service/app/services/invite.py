@@ -1,9 +1,8 @@
-# services/invite_service.py
-
 from datetime import datetime, timedelta
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.repositories.invite import InviteCodeRepository
 from app.database.db import get_db_session
 

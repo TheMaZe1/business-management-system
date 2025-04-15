@@ -9,6 +9,7 @@ from app.services.membership import MembershipService
 async def get_current_user(
     token: str = Depends(oauth2_scheme)
 ):
+    """Возвращет id текущего пользователя"""
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         user_id: int = int(payload.get("sub"))
@@ -23,6 +24,7 @@ async def get_current_user(
 
 # Функция проверки роли пользователя в команде
 async def get_membership(team_id: int, user_id: int, membership_service: MembershipService):
+    """Возвращает участника команды, его департамент и роль"""
     membership = await membership_service.get_member_by_team_and_user(team_id, user_id)
     
     if not membership:

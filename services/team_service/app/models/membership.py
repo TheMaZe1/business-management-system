@@ -1,7 +1,9 @@
 from datetime import datetime
 import enum
-from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, func, Enum as SQLAlchemyEnum
+
+from sqlalchemy import Column, ForeignKey, Integer, func, Enum as SQLAlchemyEnum
 from sqlalchemy.orm import mapped_column, Mapped, relationship
+
 from app.database.db import Base
 
 
@@ -9,6 +11,7 @@ class MembershipRole(str, enum.Enum):
     ADMIN = "admin"        # Администратор компании
     MANAGER = "manager"    # Менеджер (например, руководитель отдела)
     STAFF = "staff"  # Сотрудник
+
 
 class Membership(Base):
     __tablename__ = "memberships"
@@ -21,5 +24,4 @@ class Membership(Base):
     department_id: Mapped[int] = mapped_column(ForeignKey("departments.id"), nullable=True)
 
     department = relationship("Department", back_populates="members")
-    # Связь с командой
     team = relationship("Team", back_populates="memberships")

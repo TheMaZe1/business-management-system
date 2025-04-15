@@ -1,8 +1,10 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship, Mapped, mapped_column
-from app.database.db import Base
 from datetime import datetime
+
+from sqlalchemy import String, ForeignKey
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql import func
+
+from app.database.db import Base
 
 
 class Department(Base):

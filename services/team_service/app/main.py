@@ -9,10 +9,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Подключаем роутеры
 app.include_router(router)
 
 
 @app.get("/")
 async def root():
-    return {"message": "User Service is running"}
+    return {"message": "Team Service is running"}

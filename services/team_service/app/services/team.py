@@ -1,11 +1,9 @@
-from typing import Optional
-
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
 
 from app.models.team import Team
 from app.repositories.team import SQLAlchemyTeamsRepository
 from app.schemas.team import TeamCreate, TeamResponse, TeamStructureResponse, TeamUpdate
-from fastapi import Depends
 from app.database.db import get_db_session
 from app.models.membership import Membership, MembershipRole
 from app.repositories.membership import SQLAlchemyMembershipRepository
@@ -25,7 +23,7 @@ class TeamService:
         membership = Membership(
             user_id=user_id,
             team_id=team_id,
-            role=MembershipRole.ADMIN,  # Предполагаем, что пользователь является администратором
+            role=MembershipRole.ADMIN, 
         )
         
         # Добавляем membership в репозиторий
@@ -100,7 +98,7 @@ class TeamService:
         department_map = {dept.id: {"managers": [], "members": []} for dept in departments}
 
         for m in memberships:
-            user = m.user_id  # Убедись, что ты делаешь join user при загрузке membership
+            user = m.user_id
             user_summary = UserSummary(user_id=user)
 
             if m.role == MembershipRole.ADMIN:

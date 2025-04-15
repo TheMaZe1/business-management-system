@@ -1,10 +1,7 @@
-from datetime import datetime
-
-from sqlalchemy.orm import Mapped, relationship
-from sqlalchemy import Column, Boolean, DateTime, ForeignKey, Integer, String, func
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
 
 from app.database.db import Base
-from app.models.membership import Membership
 
 
 class InviteCode(Base):
@@ -13,7 +10,7 @@ class InviteCode(Base):
     id = Column(Integer, primary_key=True)
     code = Column(String, unique=True, nullable=False, index=True)
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    expires_at = Column(DateTime, nullable=True)  # опционально, если хочешь срок жизни
+    created_at = Column(DateTime, default=func.now())
+    expires_at = Column(DateTime, nullable=True)
 
     team = relationship("Team", back_populates="invite_codes")

@@ -1,10 +1,10 @@
-# repositories/invite_code.py
+import secrets
+from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.invite import InviteCode
-from datetime import datetime
-import secrets
 
 
 class InviteCodeRepository:

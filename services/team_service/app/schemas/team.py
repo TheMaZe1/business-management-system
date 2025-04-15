@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import List, Optional
+
+from pydantic import BaseModel
 
 from app.schemas.user import UserSummary
 from app.schemas.department import DepartmentStructure
@@ -16,11 +17,13 @@ class TeamResponse(BaseModel):
     description: Optional[str] = None
 
     class Config:
-        from_attributes = True  # чтобы Pydantic мог работать с SQLAlchemy моделями
+        from_attributes = True
+
 
 class TeamUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+
 
 class TeamStructureResponse(BaseModel):
     team_id: int

@@ -1,8 +1,8 @@
-# app/models/team_news.py
-
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, func
 from sqlalchemy.orm import relationship
+
 from app.database.db import Base
+
 
 class TeamNews(Base):
     __tablename__ = "team_news"

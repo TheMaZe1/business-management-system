@@ -1,9 +1,10 @@
-# app/repositories/news.py
-
 from typing import Optional
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from app.models.news import TeamNews
+
 
 class SQLAlchemyNewsRepository:
     def __init__(self, session: AsyncSession):

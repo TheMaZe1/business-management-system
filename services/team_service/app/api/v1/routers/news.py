@@ -1,6 +1,5 @@
-# app/api/v1/routers/news.py
-
 from fastapi import APIRouter, Depends, HTTPException
+
 from app.services.news import NewsService
 from app.services.membership import MembershipService
 from app.schemas.news import NewsCreate, NewsResponse, NewsUpdate

@@ -1,10 +1,10 @@
-from fastapi import Depends
-from app.models.department import Department
-from app.repositories.department import SQLAlchemyDepartmentRepository
 from typing import List, Optional
 
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.department import Department
+from app.repositories.department import SQLAlchemyDepartmentRepository
 from app.database.db import get_db_session
 
 

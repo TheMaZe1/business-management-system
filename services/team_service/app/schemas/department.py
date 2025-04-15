@@ -1,7 +1,6 @@
-# app/schemas/department.py
+from typing import List, Optional
 
 from pydantic import BaseModel
-from typing import List, Optional
 
 from app.schemas.user import UserSummary
 
@@ -18,7 +17,7 @@ class DepartmentResponse(BaseModel):
     description: Optional[str]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class DepartmentUpdate(BaseModel):
     name: Optional[str] = None

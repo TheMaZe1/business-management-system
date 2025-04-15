@@ -1,13 +1,10 @@
-# app/services/membership.py
-
 from typing import List
 
 from fastapi import Depends
-from sqlalchemy import select
-from app.repositories.membership import SQLAlchemyMembershipRepository
-from app.schemas.membership import MembershipSummary, MembershipUpdate
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.repositories.membership import SQLAlchemyMembershipRepository
+from app.schemas.membership import MembershipSummary, MembershipUpdate
 from app.database.db import get_db_session
 from app.models.membership import Membership, MembershipRole
 

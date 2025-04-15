@@ -1,6 +1,5 @@
-# app/api/v1/routers/members.py
-
 from fastapi import APIRouter, Depends, HTTPException, status
+
 from app.schemas.membership import MembershipCreate, MembershipSummary, MembershipUpdate
 from app.services.membership import MembershipService
 from app.api.v1.routers.deps import get_current_user, get_membership
@@ -16,7 +15,6 @@ async def get_team_members(team_id: int, service: MembershipService = Depends(Me
         return await service.get_members_by_team(team_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
-    pass
 
 @router.post("/{user_id}", response_model=MembershipSummary)
 async def add_member(

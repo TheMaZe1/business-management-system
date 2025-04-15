@@ -1,6 +1,5 @@
-# app/schemas/membership.py
-
 from typing import Optional
+
 from pydantic import BaseModel
 
 from app.models.membership import MembershipRole
@@ -25,6 +24,4 @@ class MembershipSummary(BaseModel):
     department_id: Optional[int] = None
 
     class Config:
-        orm_mode = True
-        # use_enum_values = True  # Это важно для сериализации Enum как строк
-
+        from_attributes = True

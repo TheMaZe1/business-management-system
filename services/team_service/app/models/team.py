@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy.orm import mapped_column, Mapped, relationship
-from sqlalchemy import Boolean, ForeignKey, String, func
+from sqlalchemy import Boolean, String, func
 
 from app.database.db import Base
 from app.models.membership import Membership
