@@ -1,5 +1,6 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.repositories.calendar import CalendarRepository
 from app.models.calendar import Calendar
 from app.schemas.calendar import CalendarCreate, CalendarResponse
@@ -23,15 +24,6 @@ class CalendarService:
 
     async def get_calendar_by_id(self, calendar_id: int) -> Calendar | None:
         return await self.repo.get_by_id(calendar_id)
-    
-    async def get_or_create_calendar(self, user_id: int) -> Calendar:
-        calendar = await self.repo.get_by_user(user_id)
-        if calendar:
-            return calendar
-
-        # Если календарь не найден — создаём новый
-        new_calendar = Calendar(user_id=user_id)
-        return await self.repo.create(new_calendar)
 
     async def get_calendar_with_events(self, user_id: int) -> CalendarResponse:
         calendar = await self.repo.get_user_calendar_with_events(user_id)
@@ -39,5 +31,5 @@ class CalendarService:
         return CalendarResponse(
         id=calendar.id,
         user_id=calendar.owner_id,
-        events=calendar.events  # Pydantic сам обработает это через `from_attributes=True`
+        events=calendar.events
     )

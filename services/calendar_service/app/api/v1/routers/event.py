@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+
 from app.schemas.event import CalendarEventCreate, CalendarEventUpdate, CalendarEventResponse
 from app.services.event import CalendarEventService
 from app.api.v1.routers.deps import get_current_user
@@ -14,8 +15,6 @@ async def get_my_events(
     current_user: int = Depends(get_current_user),
     service: CalendarEventService = Depends(CalendarEventService)
 ):
-    # Здесь будем использовать информацию о текущем пользователе для получения календаря (через get_by_user)
-    # или передавать ID календаря, если он связан с пользователем
     try:
         calendar = await service.calendar_repo.get_by_user(current_user)
         if not calendar:
@@ -34,7 +33,6 @@ async def create_event(
     service: CalendarEventService = Depends(CalendarEventService)
 ):
     try:
-        # Здесь календарь будет уже проверяться в сервисе для пользователя, который делает запрос
         event = await service.create_event(event_data=event_data)
         return event
     except ValueError as e:

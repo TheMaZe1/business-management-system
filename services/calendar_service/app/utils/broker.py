@@ -1,10 +1,10 @@
 import aio_pika
-import asyncio
 import json
 
 from app.database.db import get_db_session
 from app.services.calendar import CalendarService
 from app.schemas.calendar import CalendarCreate
+from app.config import settings
 
 # Обработчик события, который создаёт календарь для пользователя
 async def handle_user_created(message: aio_pika.IncomingMessage):
@@ -19,7 +19,7 @@ async def handle_user_created(message: aio_pika.IncomingMessage):
 
 # Запуск слушателя
 async def start_calendar_event_listener():
-    connection = await aio_pika.connect_robust("amqp://guest:guest@localhost/")  # Подключаемся к RabbitMQ
+    connection = await aio_pika.connect_robust(settings.RABBITMQ_URL)  # Подключаемся к RabbitMQ
     channel = await connection.channel()  # Открываем канал
     exchange = await channel.declare_exchange("user_events", aio_pika.ExchangeType.FANOUT)  # Обменник событий
     queue = await channel.declare_queue("", exclusive=True)  # Создаём временную очередь

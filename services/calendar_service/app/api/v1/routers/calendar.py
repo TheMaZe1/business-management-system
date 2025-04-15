@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
+
 from app.services.calendar import CalendarService
 from app.schemas.calendar import CalendarResponse
 from app.api.v1.routers.deps import get_current_user

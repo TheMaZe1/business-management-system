@@ -1,7 +1,4 @@
-# Таблица для связи many-to-many между Meeting и User
-
-
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, Text
+from sqlalchemy import Column, DateTime, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from app.database.db import Base

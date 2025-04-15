@@ -5,10 +5,9 @@ import jwt
 from app.config import settings
 from app.utils.jwt import oauth2_scheme
 from app.schemas.membership import MembershipResponse
-# from app.schemas.membership import MembershipResponse
 
 
-MEMBERSHIP_SERVICE_URL = "http://127.0.0.1:8002/teams"
+MEMBERSHIP_SERVICE_URL = settings.MEMBERSHIP_SERVICE_URL
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme)

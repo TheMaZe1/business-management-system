@@ -1,6 +1,8 @@
-from app.models.event import CalendarEvent
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+
+from app.models.event import CalendarEvent
+
 
 class CalendarEventRepository:
     def __init__(self, session: AsyncSession):

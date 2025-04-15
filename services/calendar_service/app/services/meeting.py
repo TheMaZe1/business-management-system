@@ -1,5 +1,6 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.meeting import Meeting
 from app.models.event import CalendarEvent
 from app.repositories.meeting import MeetingRepository
@@ -17,7 +18,7 @@ class MeetingService:
 
     async def _build_response(self, meeting: Meeting) -> MeetingResponse:
         participant_ids = await self.repo.get_meeting_participants(meeting.id, meeting.team_id)
-        return MeetingResponse.from_orm(meeting).copy(update={"participant_ids": participant_ids})
+        return MeetingResponse.model_validate(meeting).model_copy(update={"participant_ids": participant_ids})
 
     async def create_meeting(self, organizer_id: int, team_id: int, data: MeetingCreate) -> MeetingResponse:
         if data.start_time >= data.end_time:

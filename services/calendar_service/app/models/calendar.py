@@ -1,8 +1,7 @@
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer
 from sqlalchemy.orm import relationship
 
 from app.database.db import Base
-from app.models.event import CalendarEvent
 
 
 class Calendar(Base):

@@ -1,9 +1,9 @@
-from app.models.calendar import Calendar
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete, select
 from sqlalchemy.orm import selectinload
 
 from app.models.event import CalendarEvent
+from app.models.calendar import Calendar
 
 class CalendarRepository:
     def __init__(self, session: AsyncSession):

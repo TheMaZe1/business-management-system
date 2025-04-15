@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
+
 from app.services.meeting import MeetingService
 from app.schemas.meeting import MeetingCreate, MeetingResponse, MeetingUpdate
 from app.api.v1.routers.deps import get_current_user, get_membership
@@ -37,15 +38,8 @@ async def get_team_meetings(
 ):
     member = await get_membership(team_id, current_user, request)
     if member.role not in [MembershipRole.ADMIN, MembershipRole.MANAGER]:
-        raise HTTPException(status_code=403, detail="Only admins or managers can see meetings")
+        raise HTTPException(status_code=403, detail="Only admins or managers can view meetings")
     return await service.get_meetings_by_team(team_id)
-
-# @router.get("/", response_model=list[MeetingResponse])
-# async def get_my_meetings(
-#     current_user: int = Depends(get_current_user),
-#     service: MeetingService = Depends(MeetingService)
-# ):
-#     return await service.get_user_meetings(current_user)
 
 
 # Получить встречу по ID

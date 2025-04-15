@@ -2,7 +2,7 @@ import asyncio
 from fastapi import FastAPI
 
 from app.api.v1.routers import router
-from app.utils.broker import start_calendar_event_listener  # Импорт твоего роутера
+from app.utils.broker import start_calendar_event_listener 
 
 
 app = FastAPI(

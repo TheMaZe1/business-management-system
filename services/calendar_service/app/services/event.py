@@ -1,12 +1,10 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.repositories.event import CalendarEventRepository
 from app.repositories.calendar import CalendarRepository
 from app.models.event import CalendarEvent
 from app.schemas.event import CalendarEventCreate, CalendarEventUpdate
-from sqlalchemy.future import select
-from datetime import datetime
-
 from app.database.db import get_db_session
 
 class CalendarEventService:
