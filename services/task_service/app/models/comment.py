@@ -1,7 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, Text, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
+
 from app.database.db import Base
-from datetime import datetime
 
 
 class Comment(Base):
@@ -11,6 +11,6 @@ class Comment(Base):
     task_id = Column(Integer, ForeignKey("tasks.id"))
     user_id = Column(Integer, nullable=False)
     text = Column(Text, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=func.now())
 
     task = relationship("Task", back_populates="comments")

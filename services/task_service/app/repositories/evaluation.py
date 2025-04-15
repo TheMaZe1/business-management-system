@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from app.models.evaluation import TaskEvaluation
 from app.models.task import Task
+
 
 class TaskEvaluationRepository:
     def __init__(self, db: AsyncSession):
@@ -30,7 +32,6 @@ class TaskEvaluationRepository:
 
     # Метод для получения всех оценок по подразделению и кварталу
     async def get_evaluations_by_department_and_quarter(self, department_id: int, quarter: int) -> list[TaskEvaluation]:
-        # Здесь добавьте логику для фильтрации по кварталу, например, по дате
         result = await self.db.execute(
             select(TaskEvaluation)
             .join(Task)
@@ -44,3 +45,4 @@ class TaskEvaluationRepository:
             select(Task).where(Task.id == task_id)
         )
         return result.scalar_one_or_none()
+    

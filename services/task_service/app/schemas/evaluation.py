@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from datetime import datetime
+
+from pydantic import BaseModel
 
 class TaskEvaluationCreate(BaseModel):
     deadline_score: float

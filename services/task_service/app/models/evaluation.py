@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, Float, ForeignKey, DateTime, func
 from sqlalchemy.orm import relationship
-from datetime import datetime
+
 from app.database.db import Base
 
 class TaskEvaluation(Base):
@@ -13,7 +13,7 @@ class TaskEvaluation(Base):
     deadline_score = Column(Float, nullable=False)  # Оценка за срок
     quality_score = Column(Float, nullable=False)   # Оценка за качество
     completeness_score = Column(Float, nullable=False)  # Оценка за полноту выполнения
-    evaluation_date = Column(DateTime, default=datetime.utcnow)
+    evaluation_date = Column(DateTime, default=func.now())
 
     task = relationship("Task", back_populates="evaluations")
 

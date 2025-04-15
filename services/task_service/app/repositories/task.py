@@ -1,10 +1,10 @@
-# app/repositories/task.py
+from typing import List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
 from app.models.task import Task
-from app.models.comment import Comment
-from typing import List
+
 
 class TaskRepository:
     def __init__(self, session: AsyncSession):

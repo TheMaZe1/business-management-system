@@ -1,7 +1,8 @@
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.repositories.evaluation import TaskEvaluationRepository
 from app.schemas.evaluation import TaskEvaluationCreate, TaskEvaluationResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.evaluation import TaskEvaluation
 from app.database.db import get_db_session
 

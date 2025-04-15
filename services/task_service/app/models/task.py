@@ -1,8 +1,9 @@
 from enum import Enum
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Enum as SQLEnum, DateTime
+
+from sqlalchemy import Column, Integer, String, Text, Enum as SQLEnum, DateTime, func
 from sqlalchemy.orm import relationship
+
 from app.database.db import Base
-from datetime import datetime
 
 class TaskStatus(str, Enum):
     OPEN = "open"
@@ -21,7 +22,7 @@ class Task(Base):
     team_id = Column(Integer, nullable=False)
     department_id = Column(Integer, nullable=True)
     due_date = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=func.now())
 
     comments = relationship("Comment", back_populates="task")
     evaluations = relationship("TaskEvaluation", back_populates="task")

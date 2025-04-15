@@ -1,8 +1,9 @@
-from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
+
+from pydantic import BaseModel
+
 from app.models.task import TaskStatus
-from app.schemas.comment import CommentResponse
 
 
 class TaskBase(BaseModel):
@@ -31,4 +32,4 @@ class TaskResponse(TaskBase):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes=True

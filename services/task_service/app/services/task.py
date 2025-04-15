@@ -1,9 +1,8 @@
-# app/services/task.py
-
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.repositories.task import TaskRepository
-from app.models.task import Task, TaskStatus
+from app.models.task import Task
 from app.schemas.task import TaskCreate, TaskUpdate
 from app.database.db import get_db_session
 

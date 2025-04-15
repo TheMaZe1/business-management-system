@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Request
+
 from app.schemas.evaluation import TaskEvaluationCreate, TaskEvaluationResponse
 from app.services.evaluation import TaskEvaluationService
 from app.api.v1.routers.deps import get_current_user, get_membership
@@ -52,3 +53,6 @@ async def create_task_evaluation(
 async def get_my_evaluations(current_user: int = Depends(get_current_user), service: TaskEvaluationService = Depends(TaskEvaluationService)):
     evaluations = await service.get_user_evaluations(user_id=current_user)
     return evaluations
+
+
+# TODO: добавить ручку для вывода ценок за квартал
