@@ -7,7 +7,6 @@ from app.schemas.user import UserSummary
 
 
 class DepartmentCreate(BaseModel):
-    team_id: int
     name: str
     description: Optional[str] = None
 

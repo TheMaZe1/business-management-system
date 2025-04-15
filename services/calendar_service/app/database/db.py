@@ -18,7 +18,6 @@ async_session = async_sessionmaker(
 class Base(DeclarativeBase):
     pass
 
-@asynccontextmanager
 async def get_db_session() -> AsyncSession: # type: ignore
     async with async_session() as session:
         yield session

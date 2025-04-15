@@ -4,16 +4,16 @@ from app.models.meeting import Meeting
 from app.models.event import CalendarEvent
 
 class MeetingRepository:
-    def __init__(self, db: AsyncSession):
-        self.db = db
+    def __init__(self, session: AsyncSession):
+        self.session = session
 
     async def create(self, meeting: Meeting) -> Meeting:
-        self.db.add(meeting)
-        await self.db.flush()
+        self.session.add(meeting)
+        await self.session.flush()
         return meeting
     
     async def get_by_id(self, meeting_id: int) -> Meeting | None:
-        result = await self.db.execute(
+        result = await self.session.execute(
             select(Meeting).where(Meeting.id == meeting_id)
         )
         return result.scalars().first()
@@ -41,7 +41,7 @@ class MeetingRepository:
         return meeting
     
     async def get_meeting_participants(self, meeting_id: int, team_id: int):
-        events = await self.db.execute(
+        events = await self.session.execute(
             select(CalendarEvent).where(
                 CalendarEvent.meeting_id == meeting_id,
                 CalendarEvent.team_id == team_id,

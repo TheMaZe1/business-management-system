@@ -1,7 +1,7 @@
 from app.models.calendar import Calendar
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete, select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import selectinload
 
 from app.models.event import CalendarEvent
 
@@ -34,7 +34,10 @@ class CalendarRepository:
     async def get_user_calendar_with_events(self, user_id: int) -> Calendar | None:
         result = await self.session.execute(
             select(Calendar)
-            .options(joinedload(Calendar.events))
-            .where(Calendar.owner_id == user_id, Calendar.is_team_calendar == False)
+            .options(selectinload(Calendar.events))
+            .where(
+                Calendar.owner_id == user_id,
+                Calendar.is_team_calendar == False
+            )
         )
         return result.scalar_one_or_none()
