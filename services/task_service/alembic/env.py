@@ -7,9 +7,15 @@ from sqlalchemy import pool
 from alembic import context
 
 from app.database.db import Base
-from app.models.task import Task
-from app.models.comment import Comment
-from app.models.evaluation import TaskEvaluation
+
+# Автоматически импортируем все модели из пакета, чтобы они были зарегистрированы в Base.metadata
+model_dir = os.path.join(os.path.dirname(__file__), '..', 'app', 'models')
+
+# Ищем все модули в папке models и импортируем их
+for model_file in os.listdir(model_dir):
+    if model_file.endswith('.py') and model_file != '__init__.py':
+        module_name = f'app.models.{model_file[:-3]}'
+        __import__(module_name)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
