@@ -52,6 +52,6 @@ class MeetingRepository:
         events = events.scalars().all()
 
         # Получаем id пользователей из календарей событий
-        participant_ids = [event.calendar_id for event in events]
+        participant_ids = set([event.calendar_id for event in events])
 
         return participant_ids  # Вернем ID участников

@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.meeting import Meeting
@@ -69,11 +69,16 @@ class MeetingService:
         await self.repo.delete(meeting)
         return True
 
-    async def update_meeting(self, meeting_id: int, update_data: MeetingUpdate, current_user: int) -> MeetingResponse | None:
+    async def update_meeting(self, meeting_id: int, update_data: MeetingUpdate, current_user: int) -> Meeting:
         meeting = await self.repo.get_by_id(meeting_id)
-        if not meeting or meeting.organizer_id != current_user:
-            return None
 
+        if not meeting:
+            raise HTTPException(status_code=404, detail="Meeting not found")
+
+        if meeting.organizer_id != current_user:
+            raise HTTPException(status_code=403, detail="Only the organizer can update this meeting")
+
+        # Обновляем поля
         if update_data.title:
             meeting.title = update_data.title
         if update_data.description is not None:
@@ -84,9 +89,17 @@ class MeetingService:
             meeting.end_time = update_data.end_time
 
         if update_data.participant_ids is not None:
+            meeting.participant_ids = update_data.participant_ids
+
+            # Удалим старые events
             await self.event_repo.delete_by_meeting_id(meeting_id)
+
+            # Добавим новые calendar events для участников
             for user_id in update_data.participant_ids:
-                calendar = await self.calendar_repo.get_or_create_by_user(user_id)
+                calendar = await self.calendar_repo.get_by_user_id(user_id)
+                if not calendar:
+                    calendar = await self.calendar_repo.create_for_user(user_id)
+
                 event = CalendarEvent(
                     calendar_id=calendar.id,
                     title=meeting.title,
@@ -94,10 +107,8 @@ class MeetingService:
                     start_time=meeting.start_time,
                     end_time=meeting.end_time,
                     is_meeting=True,
-                    meeting_id=meeting.id,
-                    team_id=meeting.team_id
+                    meeting_id=meeting.id
                 )
                 await self.event_repo.create(event)
 
-        updated = await self.repo.update(meeting)
-        return await self._build_response(updated)
+        return await self.repo.update(meeting)

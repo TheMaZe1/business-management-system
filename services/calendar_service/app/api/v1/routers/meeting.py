@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.services.meeting import MeetingService
 from app.schemas.meeting import MeetingCreate, MeetingResponse, MeetingUpdate
-from app.api.v1.routers.deps import get_current_user, get_membership
+from app.api.v1.routers.deps import get_current_user, get_meeting_service, get_membership
 from app.schemas.membership import MembershipRole
 
 router = APIRouter(
@@ -17,7 +17,7 @@ async def create_meeting(
     team_id: int,
     meeting_data: MeetingCreate,
     current_user: int = Depends(get_current_user),
-    service: MeetingService = Depends(MeetingService)
+    service: MeetingService = Depends(get_meeting_service)
 ):
     try:
         member = await get_membership(team_id, current_user, request)
@@ -34,11 +34,19 @@ async def get_team_meetings(
     request: Request,
     team_id: int,
     current_user: int = Depends(get_current_user),
-    service: MeetingService = Depends(MeetingService)
+    service: MeetingService = Depends(get_meeting_service)
 ):
     member = await get_membership(team_id, current_user, request)
     if member.role not in [MembershipRole.ADMIN, MembershipRole.MANAGER]:
-        raise HTTPException(status_code=403, detail="Only admins or managers can view meetings")
+               # Если пользователь не админ или менеджер, проверяем, есть ли он в участниках встречи
+        meetings = await service.get_meetings_by_team(team_id)
+        accessible_meetings = [
+            meeting for meeting in meetings if current_user in meeting.participant_ids
+        ]
+        if not accessible_meetings:
+            raise HTTPException(status_code=403, detail="You do not have access to any meetings in this team")
+
+        return accessible_meetings
     return await service.get_meetings_by_team(team_id)
 
 
@@ -47,7 +55,7 @@ async def get_team_meetings(
 async def get_meeting(
     meeting_id: int,
     current_user: int = Depends(get_current_user),
-    service: MeetingService = Depends(MeetingService)
+    service: MeetingService = Depends(get_meeting_service)
 ):
     meeting = await service.get_meeting_by_id(meeting_id)
     if not meeting or current_user not in meeting.participant_ids:
@@ -60,15 +68,8 @@ async def update_meeting(
     meeting_id: int,
     update_data: MeetingUpdate,
     current_user: int = Depends(get_current_user),
-    service: MeetingService = Depends(MeetingService)
+    service: MeetingService = Depends(get_meeting_service)
 ):
-    meeting = await service.get_meeting_by_id(meeting_id)
-    if not meeting:
-        raise HTTPException(status_code=404, detail="Meeting not found")
-
-    if meeting.organizer_id != current_user:
-        raise HTTPException(status_code=403, detail="Only the organizer can update this meeting")
-
     try:
         updated_meeting = await service.update_meeting(meeting_id, update_data, current_user)
         return updated_meeting
@@ -80,7 +81,7 @@ async def update_meeting(
 async def delete_meeting(
     meeting_id: int,
     current_user: int = Depends(get_current_user),
-    service: MeetingService = Depends(MeetingService)
+    service: MeetingService = Depends(get_meeting_service)
 ):
     meeting = await service.get_meeting_by_id(meeting_id)
     if not meeting:
@@ -89,5 +90,5 @@ async def delete_meeting(
     if meeting.organizer_id != current_user:
         raise HTTPException(status_code=403, detail="Only the organizer can delete this meeting")
 
-    success = await service.delete_meeting(meeting_id, current_user)
-    return {"detail": "Meeting deleted"}
+    await service.delete_meeting(meeting_id, current_user)
+    return meeting

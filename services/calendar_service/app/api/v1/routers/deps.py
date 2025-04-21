@@ -9,6 +9,7 @@ from app.schemas.membership import MembershipResponse
 from app.services.event import CalendarEventService
 from app.database.db import get_db_session
 from app.services.calendar import CalendarService
+from app.services.meeting import MeetingService
 
 
 MEMBERSHIP_SERVICE_URL = settings.MEMBERSHIP_SERVICE_URL
@@ -48,3 +49,6 @@ def get_calendar_event_service(db: AsyncSession = Depends(get_db_session)) -> Ca
 
 def get_calendar_service(db: AsyncSession = Depends(get_db_session)) -> CalendarService:
     return CalendarService(db)
+
+def get_meeting_service(db: AsyncSession = Depends(get_db_session)) -> MeetingService:
+    return MeetingService(db)
