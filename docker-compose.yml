@@ -1,0 +1,99 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  user_db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: user_service
+    volumes:
+      - user_db_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  user_service:
+    build: ./services/user_service
+    depends_on:
+      - user_db
+      - rabbitmq
+    env_file:
+      - ./services/user_service/.env
+    ports:
+      - "8001:8000"
+
+  team_db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: team_service
+    volumes:
+      - team_db_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+
+  team_service:
+    build: ./services/team_service
+    depends_on:
+      - team_db
+      - rabbitmq
+    env_file:
+      - ./services/team_service/.env
+    ports:
+      - "8002:8000"
+
+  calendar_db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: calendar_service
+    volumes:
+      - calendar_db_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+
+  calendar_service:
+    build: ./services/calendar_service
+    depends_on:
+      - calendar_db
+      - rabbitmq
+    env_file:
+      - ./services/calendar_service/.env
+    ports:
+      - "8003:8000"
+
+  task_db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: task_service
+    volumes:
+      - task_db_data:/var/lib/postgresql/data
+    ports:
+      - "5436:5432"
+
+  task_service:
+    build: ./services/task_service
+    depends_on:
+      - task_db
+      - rabbitmq
+    env_file:
+      - ./services/task_service/.env
+    ports:
+      - "8004:8000"
+
+volumes:
+  user_db_data:
+  team_db_data:
+  calendar_db_data:
+  task_db_data:
