@@ -1,20 +1,23 @@
-from fastapi import Depends
+import logging
+
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.event import CalendarEventRepository
 from app.repositories.calendar import CalendarRepository
 from app.models.event import CalendarEvent
 from app.schemas.event import CalendarEventCreate, CalendarEventUpdate
-from app.database.db import get_db_session
+
+logger = logging.getLogger(__name__)
 
 class CalendarEventService:
-    def __init__(self, db: AsyncSession = Depends(get_db_session)):
+    def __init__(self, db: AsyncSession):
         self.repo = CalendarEventRepository(db)
         self.calendar_repo = CalendarRepository(db)
 
-    async def create_event(self, event_data: CalendarEventCreate) -> CalendarEvent:
+    async def create_event(self, event_data: CalendarEventCreate, user_id: int) -> CalendarEvent:
         # Валидация календаря по ID
-        calendar = await self.calendar_repo.get_by_id(event_data.calendar_id)
+        calendar = await self.calendar_repo.get_by_user(user_id)
         if not calendar:
             raise ValueError("Calendar not found")
 
@@ -54,32 +57,38 @@ class CalendarEventService:
 
     async def update_event(self, event_id: int, user_id: int, update_data: CalendarEventUpdate) -> CalendarEvent:
         # Получаем событие по ID
-        event = await self.repo.get_by_id(event_id)
-        if not event:
-            raise ValueError("Event not found")
+        event = await self.ensure_event_access(event_id, user_id)
+        
+        # Переводим данные в словарь и передаем в репозиторий
+        update_dict = update_data.dict(exclude_unset=True)
+        
+        # Используем update_partial для обновления
+        updated_event = await self.repo.update_partial(event, update_dict)
+        
+        return updated_event
 
-        # Проверка, что событие принадлежит календарю пользователя
-        calendar = await self.calendar_repo.get_by_id(event.calendar_id)
-        if not calendar or calendar.user_id != user_id:
-            raise ValueError("You don't have permission to update this event")
-
-        # Обновляем поля события
-        for key, value in update_data.dict(exclude_unset=True).items():
-            setattr(event, key, value)
-
-        # Сохраняем обновленное событие
-        return await self.repo.update(event)
-
-    async def delete_event(self, event_id: int, user_id: int) -> None:
-        # Получаем событие по ID
-        event = await self.repo.get_by_id(event_id)
-        if not event:
-            raise ValueError("Event not found")
-
-        # Проверка, что событие принадлежит календарю пользователя
-        calendar = await self.calendar_repo.get_by_id(event.calendar_id)
-        if not calendar or calendar.user_id != user_id:
-            raise ValueError("You don't have permission to delete this event")
+    async def delete_event(self, event_id: int, current_user: int) -> bool:
+        event = await self.ensure_event_access(event_id, current_user)
 
         # Удаляем событие
-        await self.repo.delete(event)
+        success = await self.repo.delete(event)
+        
+        if success:
+            # Можно добавить логирование о успешном удалении
+            logger.info(f"Event {event_id} deleted successfully by user {current_user}")
+            return True
+        else:
+            # Можно добавить логирование о неудачном удалении
+            logger.error(f"Failed to delete event {event_id} by user {current_user}")
+            return False
+
+    async def ensure_event_access(self, event_id: int, current_user: int):
+        event = await self.event_repo.get_by_id(event_id)
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+
+        calendar = await self.calendar_repo.get_by_id(event.calendar_id)
+        if not calendar or calendar.owner_id != current_user:
+            raise HTTPException(status_code=403, detail="Access denied to this event")
+        
+        return event

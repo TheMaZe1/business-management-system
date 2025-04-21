@@ -1,10 +1,14 @@
 from fastapi import Depends, HTTPException, Request, status
 import httpx
 import jwt
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.utils.jwt import oauth2_scheme
 from app.schemas.membership import MembershipResponse
+from app.services.event import CalendarEventService
+from app.database.db import get_db_session
+from app.services.calendar import CalendarService
 
 
 MEMBERSHIP_SERVICE_URL = settings.MEMBERSHIP_SERVICE_URL
@@ -17,8 +21,7 @@ async def get_current_user(
         user_id: int = int(payload.get("sub"))
         if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
-    except jwt.PyJWTError as e:
-        print("test", e)
+    except jwt.PyJWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
 
     user_id = user_id
@@ -38,3 +41,10 @@ async def get_membership(team_id: int, user_id: int, request: Request) -> Member
         raise HTTPException(status_code=403, detail="User is not a team member")
     else:
         raise HTTPException(status_code=500, detail="Failed to contact membership service")
+    
+
+def get_calendar_event_service(db: AsyncSession = Depends(get_db_session)) -> CalendarEventService:
+    return CalendarEventService(db)
+
+def get_calendar_service(db: AsyncSession = Depends(get_db_session)) -> CalendarService:
+    return CalendarService(db)

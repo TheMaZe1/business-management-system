@@ -1,14 +1,13 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.repositories.calendar import CalendarRepository
 from app.models.calendar import Calendar
 from app.schemas.calendar import CalendarCreate, CalendarResponse
-from app.database.db import get_db_session
 
 
 class CalendarService:
-    def __init__(self, db: AsyncSession = Depends(get_db_session)):
+    def __init__(self, db: AsyncSession):
         self.repo = CalendarRepository(db)
 
     async def create_calendar(self, owner_id: int, calendar_data: CalendarCreate) -> Calendar:
@@ -33,3 +32,11 @@ class CalendarService:
         user_id=calendar.owner_id,
         events=calendar.events
     )
+
+    async def get_user_calendar_or_404(self, calendar_id: int, user_id: int) -> Calendar:
+        calendar = await self.repo.get_by_id(calendar_id)
+        if not calendar:
+            raise HTTPException(status_code=404, detail="Calendar not found")
+        if calendar.owner_id != user_id or calendar.is_team_calendar:
+            raise HTTPException(status_code=403, detail="Access denied")
+        return calendar
